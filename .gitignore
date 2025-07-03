@@ -1,0 +1,26 @@
+# Node modules
+node_modules/
+frontend/node_modules/
+backend/node_modules/
+
+# Build outputs
+dist/
+frontend/dist/
+build/
+*.log
+
+# System files
+.DS_Store
+.env
+.env.local
+
+# IDE files
+.vscode/
+*.swp
+*.sublime-project
+*.sublime-workspace
+
+# OS / temp files
+Thumbs.db
+*.tmp
+*.bak
