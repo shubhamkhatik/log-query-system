@@ -1,0 +1,18 @@
+
+
+services:
+  backend:
+    build: ./backend
+    ports:
+      - '5000:5000'
+    volumes:
+      - ./backend/logs.json:/app/logs.json
+
+  frontend:
+    build: ./frontend
+    ports:
+      - '5173:4173'
+    depends_on:
+      - backend
+    environment:
+      - VITE_API_URL=${VITE_API_URL}

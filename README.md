@@ -26,7 +26,7 @@ A full-stack developer tool to ingest and query logs using filters, built with *
 ### 1. Clone the Repo
 
 ```bash
-git clone https://github.com/your-username/log-query-system.git
+git clone https://github.com/shubhamkhatik/log-query-system.git
 cd log-query-system
 ```
 
@@ -81,12 +81,33 @@ Supports query params:
 ```
 /logs?level=error&resourceId=server-1&timestamp_start=...&timestamp_end=...
 ```
+✅ Additional Features (Bonus Implemented)
+🔹 Basic Analytics View
+A bar chart was added to show the count of logs grouped by severity level (error, warn, info, debug) using Recharts.
 
+Dynamically reflects current filters
+
+Visually helpful for spotting log trends
+
+Component: LogAnalytics.jsx
 ## 🧪 Bonus Features (Optional)
 
 - Real-time updates via WebSockets (pending)
 - Docker support (not included)
-- Chart.js analytics (optional)
+🔹 Unit Testing with Jest
+Implemented unit tests for backend log filtering logic.
+
+Tests cover:
+
+Filtering by level, message, timestamp
+
+Combined filters
+
+Located in backend/utils/filterLogs.test.js
+```
+cd backend
+npm test
+```
 
 ## 🧑‍💻 Author
 
