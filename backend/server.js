@@ -1,10 +1,14 @@
-const express = require('express');
-const cors = require('cors');
-const bodyParser = require('body-parser');
-const Joi = require('joi');
-const { readLogs, writeLogs } = require('./utils/fileHandler');
+const express = require("express");
+const http = require('http');
+const cors = require("cors");
+const bodyParser = require("body-parser");
+const Joi = require("joi");
+const { readLogs, writeLogs } = require("./utils/fileHandler");
+const socketIo = require('socket.io');
 
 const app = express();
+const server = http.createServer(app);
+const io = socketIo(server, { cors: { origin: "*" } });
 const PORT = 5000;
 
 app.use(cors());
@@ -12,18 +16,18 @@ app.use(bodyParser.json());
 
 // Log Schema
 const logSchema = Joi.object({
-  level: Joi.string().valid('error', 'warn', 'info', 'debug').required(),
+  level: Joi.string().valid("error", "warn", "info", "debug").required(),
   message: Joi.string().required(),
   resourceId: Joi.string().required(),
   timestamp: Joi.string().isoDate().required(),
   traceId: Joi.string().required(),
   spanId: Joi.string().required(),
   commit: Joi.string().required(),
-  metadata: Joi.object().required()
+  metadata: Joi.object().required(),
 });
 
 // POST /logs - Ingest a new log
-app.post('/logs', async (req, res) => {
+app.post("/logs", async (req, res) => {
   const { error, value } = logSchema.validate(req.body);
   if (error) return res.status(400).json({ error: error.details[0].message });
 
@@ -32,34 +36,46 @@ app.post('/logs', async (req, res) => {
     logs.push(value);
     await writeLogs(logs);
     res.status(201).json(value);
+    // Emit real-time update
+    io.emit("log:new", value);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to store log' });
+    res.status(500).json({ error: "Failed to store log" });
   }
 });
 
 // GET /logs - Filtered query
-app.get('/logs', async (req, res) => {
+app.get("/logs", async (req, res) => {
   try {
     let logs = await readLogs();
 
     const {
-      level, message, resourceId,
-      timestamp_start, timestamp_end,
-      traceId, spanId, commit
+      level,
+      message,
+      resourceId,
+      timestamp_start,
+      timestamp_end,
+      traceId,
+      spanId,
+      commit,
     } = req.query;
 
-    logs = logs.filter(log => {
+    logs = logs.filter((log) => {
       const conditions = [];
 
       if (level) conditions.push(log.level === level);
-      if (message) conditions.push(log.message.toLowerCase().includes(message.toLowerCase()));
+      if (message)
+        conditions.push(
+          log.message.toLowerCase().includes(message.toLowerCase())
+        );
       if (resourceId) conditions.push(log.resourceId === resourceId);
       if (traceId) conditions.push(log.traceId === traceId);
       if (spanId) conditions.push(log.spanId === spanId);
       if (commit) conditions.push(log.commit === commit);
-      if (timestamp_start) conditions.push(new Date(log.timestamp) >= new Date(timestamp_start));
-      if (timestamp_end) conditions.push(new Date(log.timestamp) <= new Date(timestamp_end));
+      if (timestamp_start)
+        conditions.push(new Date(log.timestamp) >= new Date(timestamp_start));
+      if (timestamp_end)
+        conditions.push(new Date(log.timestamp) <= new Date(timestamp_end));
 
       return conditions.every(Boolean);
     });
@@ -70,7 +86,7 @@ app.get('/logs', async (req, res) => {
     res.json(logs);
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: 'Failed to fetch logs' });
+    res.status(500).json({ error: "Failed to fetch logs" });
   }
 });
 

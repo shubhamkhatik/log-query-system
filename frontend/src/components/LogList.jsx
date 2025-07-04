@@ -1,4 +1,4 @@
-import LogCard from './LogCard';
+import LogCard from "./LogCard";
 
 export default function LogList({ logs }) {
   if (!logs.length) return <p>No logs found.</p>;

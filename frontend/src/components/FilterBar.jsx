@@ -71,26 +71,25 @@ export default function FilterBar({ filters, setFilters }) {
         dateFormat="Pp"
       />
       <button
-  onClick={() =>
-    setFilters({
-      level: '',
-      message: '',
-      resourceId: '',
-      timestamp_start: '',
-      timestamp_end: ''
-    })
-  }
-  style={{
-    padding: '6px 12px',
-    backgroundColor: '#e0e0e0',
-    border: 'none',
-    borderRadius: '4px',
-    cursor: 'pointer'
-  }}
->
-  Clear Filters
-</button>
-
+        onClick={() =>
+          setFilters({
+            level: "",
+            message: "",
+            resourceId: "",
+            timestamp_start: "",
+            timestamp_end: "",
+          })
+        }
+        style={{
+          padding: "6px 12px",
+          backgroundColor: "#e0e0e0",
+          border: "none",
+          borderRadius: "4px",
+          cursor: "pointer",
+        }}
+      >
+        Clear Filters
+      </button>
     </div>
   );
 }
